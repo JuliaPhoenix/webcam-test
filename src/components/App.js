@@ -40,7 +40,7 @@ class App extends React.Component {
 	state = {
 		file: null,
 		progress: 0,
-		isWebcamReady: false,
+		webcamStatus: '',
 		status: '',
 		imageUrl: ''
 	};
@@ -51,6 +51,10 @@ class App extends React.Component {
 
 	contentType = 'image/jpeg';
 	fileName = '';
+
+	componentDidMount() {
+		this.checkWebcam();
+	}
 
 	async componentDidUpdate() {
 		if (this.state.status === 'upload') {
@@ -120,8 +124,16 @@ class App extends React.Component {
 	};
 
 	onWebcamReady = () => {
-		this.setState({ isWebcamReady: true });
+		this.setState({ webcamStatus: 'ready' });
 	};
+
+	checkWebcam() {
+		navigator.getUserMedia(
+			{ video: true },
+			() => this.setState({ webcamStatus: 'allowed' }),
+			() => this.setState({ webcamStatus: 'denied' })
+		);
+	}
 
 	getContent() {
 		if (this.state.status === 'uploading') {
@@ -142,20 +154,37 @@ class App extends React.Component {
 			);
 		}
 
-		if (!this.state.status) {
+		if (!this.state.webcamStatus) {
+			return <div>Checking webcam access...</div>;
+		}
+
+		if (this.state.webcamStatus === 'denied') {
+			return (
+				<div>
+					<p>Please give permissions to your webcam</p>
+					<p style={{ fontSize: '0.7em', fontStyle: 'italic' }}>
+						Or buy it if you haven't one
+					</p>
+				</div>
+			);
+		}
+
+		if (
+			!this.state.status &&
+			(this.state.webcamStatus === 'allowed' || this.state.webcamStatus === 'ready')
+		) {
 			const videoConstraints = {
 				width: 1280,
 				height: 720,
 				facingMode: 'user'
 			};
 
-			const button = this.state.isWebcamReady && (
+			const button = this.state.webcamStatus === 'ready' && (
 				<Button onClick={this.onButtonCaptureClick}>Capture Photo</Button>
 			);
 
 			return (
 				<WebcamArea>
-					{}
 					<Webcam
 						audio={false}
 						ref={this.setRef}
