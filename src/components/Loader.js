@@ -36,7 +36,7 @@ const Loader = props => {
 	return (
 		<LoaderArea>
 			<Spinner />
-			<LoaderMessage>Uploading {props.progress}</LoaderMessage>
+			<LoaderMessage>Uploading {props.progress}%</LoaderMessage>
 		</LoaderArea>
 	);
 };

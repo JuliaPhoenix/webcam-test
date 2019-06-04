@@ -37,7 +37,7 @@ class Photo extends React.Component {
 
 		return (
 			<div>
-				<div>{message}</div>
+				<h1>{message}</h1>
 				<div>
 					<img
 						style={imgStyle}
